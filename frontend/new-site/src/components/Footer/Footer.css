@@ -1,0 +1,13 @@
+.site-footer{
+    background-color:#945B19 ;
+    color: white;
+    margin-top: 40px;
+    padding: 40px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    height: 4vh;
+
+}

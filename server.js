@@ -3,12 +3,11 @@ import express from 'express';
 import { db } from './backend/database/db.js';
 import router from './backend/routes/routes.js';
 import { verify } from './backend/middleware/verify.js'
-//import crypto from 'crypto';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import bodyParser from 'body-parser';
-const PORT = 900;
+const PORT = 9000;
 dotenv.config();
 
 
@@ -33,7 +32,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
 
 //engine
-app.use(express.static(path.join(__dirname, '/frontend/root.html')));
+app.use(express.static(path.resolve(__dirname, "frontend", "new-site", "build")));
 
 //enable body parser
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -45,7 +44,10 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 //enable cors
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true
+}));
 
 
 
@@ -54,19 +56,19 @@ app.use("/v1", router);
 
 
 app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "root.html"))
+    res.sendFile(path.resolve(__dirname, "frontend", "new-site", "build", "index.html"));
 });
 
 app.get('/about', (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "about.html"))
-});
+    res.sendFile(path.resolve(__dirname, "../frontend/new-site"))
+ });
 
-app.get('/auth', (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "auth.html"))
-});
+// app.get('/auth', (req, res) => {
+//     res.sendFile(path.resolve(__dirname, "../frontend/new-site"))
+// });
 
 router.get('/onboarding', verify, (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "onboard.html"))
+    res.sendFile(path.resolve(__dirname, "../frontend/new-site", "onboard.html"))
 });
 
 

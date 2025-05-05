@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .site-footer{
     background-color:#945B19 ;
     color: white;
@@ -10,4 +11,18 @@
 
     height: 4vh;
 
+=======
+.site-footer{
+    background-color:#945B19 ;
+    color: white;
+    margin-top: 40px;
+    padding: 40px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    height: 4vh;
+
+>>>>>>> 45d090d0dae1ede3f649e76f90a1db8867123bc7
 }

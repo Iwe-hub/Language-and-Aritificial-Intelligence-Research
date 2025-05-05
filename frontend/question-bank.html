@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Yoruba Education Platform</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f8f8f8;
+      }
+
+      .header {
+        background-color: #111;
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        position: relative;
+      }
+
+      .header-title {
+        margin-left: 40px;
+        flex-grow: 1;
+      }
+
+      .site-name {
+        font-size: 14px;
+        opacity: 0.8;
+      }
+
+      .header-icons {
+        display: flex;
+        gap: 20px;
+      }
+
+      .back-icon,
+      .menu-icon,
+      .share-icon,
+      .more-icon {
+        cursor: pointer;
+      }
+
+      .nav-bar {
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .brand {
+        color: #8b4513;
+        font-size: 32px;
+        font-weight: bold;
+      }
+
+      .question-container {
+        background-color: #e5f0f5;
+        border-radius: 15px;
+        margin: 20px;
+        padding: 30px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .question {
+        color: #8b4513;
+        font-size: 24px;
+        margin-bottom: 30px;
+      }
+
+      .options {
+        margin-bottom: 20px;
+      }
+
+      .option {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .option input {
+        margin-right: 15px;
+        transform: scale(1.5);
+      }
+
+      .option label {
+        font-size: 18px;
+      }
+
+      .navigation-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+
+      .nav-button {
+        background-color: #8b4513;
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        font-size: 20px;
+        border: none;
+      }
+
+      .submit-button {
+        background-color: #8b4513;
+        color: white;
+        padding: 15px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 18px;
+        margin: 20px auto;
+        display: block;
+        cursor: pointer;
+        width: 60%;
+        max-width: 400px;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .status-bar {
+        background-color: #f8f8f8;
+        padding: 5px 10px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+      }
+
+      .battery {
+        display: flex;
+        align-items: center;
+      }
+
+      .battery-icon {
+        width: 20px;
+        height: 10px;
+        border: 1px solid #333;
+        border-radius: 2px;
+        position: relative;
+        margin-left: 5px;
+      }
+
+      .battery-icon:after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 47%;
+        height: 6px;
+        background-color: #333;
+      }
+
+      .menu-button {
+        font-size: 24px;
+        cursor: pointer;
+      }
+      /* Progress indicator */
+      .progress-indicator {
+        display: flex;
+        justify-content: center;
+        margin: 10px 0;
+      }
+      .progress-dot {
+        width: 10px;
+        height: 10px;
+        background-color: #ccc;
+        border-radius: 50%;
+        margin: 0 5px;
+      }
+      .progress-dot.active {
+        background-color: #8b4513;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- <div class="status-bar">
+      <div>9:46</div>
+
+      <div>7.33 KB/s 4G</div>
+
+      <div class="battery">
+        47%
+        <div class="battery-icon"></div>
+      </div>
+    </div> -->
+
+    <!-- <div class="header">
+      <span class="back-icon">←</span>
+      <div class="header-title">
+        <div>Interactive Yoruba Education Platform</div>
+
+        <div class="site-name">iwe.digital</div>
+      </div>
+
+      <div class="header-icons">
+        <span class="share-icon">⇱</span> <span class="more-icon">⋮</span>
+      </div>
+    </div> -->
+
+    <div class="nav-bar">
+      <div class="brand">Iwe</div>
+
+      <!-- <div class="menu-button">☰</div> -->
+    </div>
+
+    <div id="question-1" class="question-container">
+      <div class="question">
+       is youruba in your vacabulary
+      </div>
+
+      <div class="options">
+        <div class="option">
+          <input type="radio" id="q1-yes" name="q1" value="yes" />
+          <label for="q1-yes">Yes</label>
+        </div>
+
+        <div class="option">
+          <input type="radio" id="q1-no" name="q1" value="no" />
+          <label for="q1-no">No</label>
+        </div>
+      </div>
+
+      <div class="navigation-buttons">
+        <button class="nav-button prev" disabled>←</button>
+        <button class="nav-button next" onclick="showQuestion(2)">→</button>
+      </div>
+    </div>
+
+    <div id="question-2" class="question-container hidden">
+      <div class="question">How familiar are you with Yoruba proverbs?</div>
+
+      <div class="options">
+        <div class="option">
+          <input type="radio" id="q2-very" name="q2" value="very" />
+          <label for="q2-very">Very familiar</label>
+        </div>
+
+        <div class="option">
+          <input type="radio" id="q2-somewhat" name="q2" value="somewhat" />
+          <label for="q2-somewhat">Somewhat familiar</label>
+        </div>
+
+        <div class="option">
+          <input type="radio" id="q2-not" name="q2" value="not" />
+          <label for="q2-not">Not familiar</label>
+        </div>
+      </div>
+
+      <div class="navigation-buttons">
+        <button class="nav-button prev" onclick="showQuestion(1)">←</button>
+        <button class="nav-button next" onclick="showQuestion(3)">→</button>
+      </div>
+    </div>
+
+    <div id="question-3" class="question-container hidden">
+      <div class="question">Can you understand spoken Yoruba?</div>
+
+      <div class="options">
+        <div class="option">
+          <input type="radio" id="q3-fluently" name="q3" value="fluently" />
+          <label for="q3-fluently">Yes, fluently</label>
+        </div>
+
+        <div class="option">
+          <input type="radio" id="q3-basic" name="q3" value="basic" />
+          <label for="q3-basic">Yes, basic understanding</label>
+        </div>
+
+        <div class="option">
+          <input type="radio" id="q3-no" name="q3" value="no" />
+          <label for="q3-no">No, not at all</label>
+        </div>
+      </div>
+
+      <div class="navigation-buttons">
+        <button class="nav-button prev" onclick="showQuestion(2)">←</button>
+        <button class="nav-button next" onclick="showQuestion(4)">→</button>
+      </div>
+    </div>
+
+    <div id="question-4" class="question-container hidden">
+      <div class="question">
+        What era are you most curious about in yoruba culture and pattern
+      </div>
+      <div class="options">
+        <div class="option">
+          <input type="radio" id="q4-language" name="q4" value="language" />
+          <label for="q4-language">Pre-colonial</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q4-music" name="q4" value="music" />
+          <label for="q4-music">colonial</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q4-religion" name="q4" value="religion" />
+          <label for="q4-religion">post-colonial</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q4-art" name="q4" value="art" />
+          <label for="q4-art">All of the above</label>
+        </div>
+      </div>
+      <div class="navigation-buttons">
+        <button class="nav-button prev" onclick="showQuestion(3)">←</button>
+        <button class="nav-button next" onclick="showQuestion(5)">→</button>
+      </div>
+    </div>
+
+    <div id="question-5" class="question-container hidden">
+      <div class="question">
+        How would you like to learn more about Yoruba culture?
+      </div>
+      <div class="options">
+        <div class="option">
+          <input type="radio" id="q5-online" name="q5" value="online" />
+          <label for="q5-online">Online courses</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q5-books" name="q5" value="books" />
+          <label for="q5-books">Books and literature</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q5-community" name="q5" value="community" />
+          <label for="q5-community">Community events</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q5-travel" name="q5" value="travel" />
+          <label for="q5-travel">Travel to Yoruba regions</label>
+        </div>
+      </div>
+      <div class="navigation-buttons">
+        <button class="nav-button prev" onclick="showQuestion(4)">←</button>
+        <button class="nav-button next" disabled>→</button>
+      </div>
+    </div>
+
+
+
+    <div class="progress-indicator">
+      <div class="progress-dot active" id="dot-1"></div>
+      <div class="progress-dot" id="dot-2"></div>
+      <div class="progress-dot" id="dot-3"></div>
+      <div class="progress-dot" id="dot-4"></div>
+      <div class="progress-dot" id="dot-5"></div>
+     
+    </div>
+
+    <button class="submit-button">Submit Your Insights</button>
+
+    <script>
+      function showQuestion(num) {
+        // Hide all questions
+        document.querySelectorAll(".question-container").forEach((q) => {
+          q.classList.add("hidden");
+        });
+
+        // Show the requested question
+        document.getElementById("question-" + num).classList.remove("hidden");
+
+        // Update progress dots
+        document.querySelectorAll(".progress-dot").forEach((dot) => {
+          dot.classList.remove("active");
+        });
+        document.getElementById("dot-" + num).classList.add("active");
+      }
+    </script>
+  </body>
+</html>

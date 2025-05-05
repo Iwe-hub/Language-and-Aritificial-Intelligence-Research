@@ -12,6 +12,57 @@
         <link rel="preconnect" href="https://fonts.googleapis.com" style="">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" style="">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" style="">
+        <style>
+            
+        .loading-sections {
+            display: none;
+            width: 100%;
+        }
+
+        .section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        .section.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        .checkmark {
+            color: #4CAF50;
+            font-size: 20px;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        </style>
         <noscript style="">
             <link
                 href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
@@ -56,8 +107,87 @@
 <h2 class="mb-4 text-center text-3xl font-bold [font-family:var(--font-family-heading)] lg:text-left lg:text-5xl" style="">Welcome to your dashboard</h2>
 <p class="mb-6 text-center text-xl text-[var(--dark-text-color)] lg:text-left [font-family:Poppins] leading-relaxed" style="">Our advanced AI system combines generative AI with a powerful knowledge retrieval mechanism. By dynamically accessing and integrating external information, we enhance the accuracy, context, and richness of AI-generated responses.</p>
 <div class="flex justify-center lg:block space-x-4" style="">
-<a href="#" class="mb-12 inline-block rounded bg-[#8B4513] px-[var(--button-padding-x)] py-[var(--button-padding-y)] text-lg font-medium text-white hover:bg-[#6B3E23] [font-family:Poppins]" style="">Get Started</a>
+<a href="question-bank.html" class="mb-12 inline-block rounded bg-[#8B4513] px-[var(--button-padding-x)] py-[var(--button-padding-y)] text-lg font-medium text-white hover:bg-[#6B3E23] [font-family:Poppins]" style="">Get Started</a>
 </div>
+
+<div id="loadingSections" class="loading-sections">
+    <div class="section" id="section1">
+        <p class="section-title">Loading resources</p>
+        <div>
+            <div class="loader" id="loader1"></div>
+            <span class="checkmark" id="check1">✓</span>
+        </div>
+    </div>
+    
+    <div class="section" id="section2">
+        <p class="section-title">Preparing content</p>
+        <div>
+            <div class="loader" id="loader2"></div>
+            <span class="checkmark" id="check2">✓</span>
+        </div>
+    </div>
+    
+    <div class="section" id="section3">
+        <p class="section-title">Finalizing</p>
+        <div>
+            <div class="loader" id="loader3"></div>
+            <span class="checkmark" id="check3">✓</span>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+// Target URL to navigate to after loading
+//const targetURL = "https://example.com";
+windows.location.href ="question-bank.html"
+
+document.getElementById('loadButton').addEventListener('click', function() {
+    // Hide the button
+    this.style.display = 'none';
+    
+    // Show the loading sections
+    const loadingSections = document.getElementById('loadingSections');
+    loadingSections.style.display = 'block';
+    
+    // Load sections sequentially
+    setTimeout(() => {
+        const section1 = document.getElementById('section1');
+        section1.classList.add('loaded');
+        
+        setTimeout(() => {
+            // Complete section 1
+            document.getElementById('loader1').style.display = 'none';
+            document.getElementById('check1').style.display = 'inline';
+            
+            // Start section 2
+            const section2 = document.getElementById('section2');
+            section2.classList.add('loaded');
+            
+            setTimeout(() => {
+                // Complete section 2
+                document.getElementById('loader2').style.display = 'none';
+                document.getElementById('check2').style.display = 'inline';
+                
+                // Start section 3
+                const section3 = document.getElementById('section3');
+                section3.classList.add('loaded');
+                
+                setTimeout(() => {
+                    // Complete section 3
+                    document.getElementById('loader3').style.display = 'none';
+                    document.getElementById('check3').style.display = 'inline';
+                    
+                    // Navigate to the target URL after a short delay
+                    setTimeout(() => {
+                        window.location.href = targetURL;
+                    }, 500);
+                }, 800);
+            }, 800);
+        }, 800);
+    }, 300);
+});
+</script>
 </div>
 </div>
 </div>

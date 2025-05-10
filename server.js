@@ -44,16 +44,12 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 //enable cors
-app.use(cors({
-    origin: "http://localhost:3000",
-    credentials: true
-}));
+app.use(cors());
 
 
 
 //INITIALISE ROUTE NAVIGATION
-app.use("/v1", router);
-
+app.use("/", router);
 
 app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "frontend", "new-site", "build", "index.html"));

@@ -1,5 +1,4 @@
-import { validationResult } from "express-validator";
-import { check } from "express-validator";
+import { check, validationResult } from "express-validator";
 
 const validate = (req, res, next) => {
     const errors = validationResult(req)
@@ -27,6 +26,30 @@ class validation {
                 .notEmpty()
                 .isLength({ min: 6 })
                 .withMessage("Must be at least 6 characters long"),
+        ];
+    }
+
+    static loginValidation() {
+        return [
+            check("email")
+                .isEmail()
+                .withMessage("Enter a valid email address")
+                .normalizeEmail(),
+            check("password")
+                .notEmpty()
+                .withMessage("password is required")
+
+        ];
+    }
+
+    static forgotPasswordValidation() {
+        return [
+            check("email")
+                .isEmail()
+                .withMessage("Enter a valid email address")
+                .normalizeEmail()
+                .notEmpty()
+                .withMessage("Email address is required")
         ];
     }
 }

@@ -1,20 +1,72 @@
 import { validation, validate } from "../middleware/validate.js";
+import { OAuth2Client } from "google-auth-library";
 import User from "../models/user.js";
 import express from "express";
 import bcrypt from "bcrypt";
 import { verify, verifyRole } from "../middleware/verify.js";
 import blacklist from "../models/blacklist.js";
 import nodemailer from "nodemailer";
+import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import user from "../models/user.js";
 dotenv.config();
 
 //initialise export router
 const router = express.Router();
 
+//SEO AUTHENTICATION
+//initialise google client ID
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+
+router.post("/auth/google", async (req, res) => {
+    const { idToken } = req.body;
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+        const { name, email } = payload;
+        let googleUser = await User.findOne({ email });
+        if(!googleUser) {
+            googleUser = await User.create({
+                userName: name,
+                email,
+                password: null,
+                authProvider: "google",
+            });
+            await googleUser.save();
+        }
+
+        const token = googleUser.generateAccessJWT();
+        res.cookie('SessionID', token, {
+            maxAge: 20 * 60 * 1000,
+            httpOnly: true,
+            sameSite: 'None',
+            secure: true,
+        });
+
+        res.status(200).json({
+            status: 'success',
+            data: [{ name, email }],
+            message: 'Signed in with Google'
+        });
+    } catch (err) {
+        console.error(err)
+        res.status(401).json({
+            status: 'error',
+            message: 'Google token invalid',
+        });
+    }
+});
+
+
+
 
 //AUTHENTICATION ROUTE
 //register users
-router.post('/register', validation, validate, async (req, res) => {
+router.post('/register', validation.registerValidation(), validate, async (req, res) => {
     const { userName, email, password } = req.body;
     try {
         //create instance for user
@@ -48,16 +100,16 @@ router.post('/register', validation, validate, async (req, res) => {
             message: "Internal Server Error",
         });
     }
-    res.send();
+    res.end();
 })
 
 
 //login users
-router.post('/login', validation, validate, async (req, res) => {
+router.post('/login', validation.loginValidation(), validate, async (req, res) => {
     const { email } = req.body;
     try {
         //check if user exits
-        const user = await User.findOne({ email }).select("+password") 
+        const user = await User.findOne({ email }).select("password") 
         if (!user)
             return res.status(401).json({
             status: "failed",
@@ -65,7 +117,7 @@ router.post('/login', validation, validate, async (req, res) => {
             message: "Invalid email or password, please try again"
         });
         //validate password
-        const validatePassword = bcrypt.compare(
+        const validatePassword = await bcrypt.compare(
             `${req.body.password}`,
             user.password
         );
@@ -107,7 +159,7 @@ router.post('/login', validation, validate, async (req, res) => {
             message: "Internal service error",
         });
     }
-    res.send();
+    res.end();
 })
 
 //implement logout route
@@ -144,6 +196,104 @@ router.get('/logout', async (req, res) => {
 });
 
 
+//implement forgot password configuration
+router.post('/forgot-password', validation.forgotPasswordValidation(), validate, async (req, res) => {
+    const { email } = req.body;
+    try {
+        //check user exists
+        const forgottenUser = await User.findOne({ email });
+        if (!forgottenUser) {
+            return res.status(404).json({
+                status: "failed",
+                message: "No user found with that email address"
+            });
+        }
+        //generate password reset token
+        const resetToken = jwt.sign({ email }, process.ENV.SECRE_KEY, {
+            expiresIn: '1h'
+        });
+        //store reset token in user's record
+        forgottenUser.passwordResetToken = resetToken;
+        await forgottenUser.save();
+        
+        //create a reset password url with the token
+        const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+
+        //send password reset link to user's email
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.email,
+                password: process.env.password
+            }
+        });
+
+        const mailOptions = {
+            from: process.env.email,
+            to: email,
+            subject: "Password reser request",
+            text: `You requested a password reset. Click the link below to reset your password:\n\n${resetUrl}\n`
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if(error) {
+                console.log(error)
+                return res.status(500).json({
+                    status: "error",
+                    message: "There was an error sending the email, please try again later"
+                });
+            } else {
+                return res.status(200).json({
+                    status: "success",
+                    message: "Password reset link sent to your email"
+                });
+            }
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            status: "error",
+            message: "Internal service"
+        });
+    }
+})
+
+
+//handle password reset
+router.post('/reset-password', async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    try {
+        //verify reset token
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        const resetUser = await User.findOne({ email: decoded.email });
+        if(!resetUser) {
+            return res.status(404).json({
+                status: "failed",
+                message: "User not found"
+            });
+        }
+        //hash password
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+        //save new password
+        user.password = hashedPassword;
+        await resetUser.save();
+        res.status(200).json({
+            status: "success",
+            message: "Your password has been successfully reset"
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            status: "error",
+            message: "Internal server error"
+        });
+    }
+});
+
+
+
 //authenticated users route
 router.get('/onboarding', verify, (req, res) => {
     res.status(200).json({
@@ -165,7 +315,7 @@ router.get('/users', verify, verifyRole, (req, res) => {
     res.status(200).json({
         status: "success",
     })
-    res.send();
+    res.end();
 });
 
 //email server

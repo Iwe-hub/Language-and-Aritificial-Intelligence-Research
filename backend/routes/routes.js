@@ -14,6 +14,12 @@ dotenv.config();
 //initialise export router
 const router = express.Router();
 
+
+//initialise communication between node and react server
+router.get("/v1", (req, res) => {
+    res.json({ message: "frontend and backend connected" })
+});
+
 //SEO AUTHENTICATION
 //initialise google client ID
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
@@ -68,40 +74,55 @@ router.post("/auth/google", async (req, res) => {
 //register users
 router.post('/register', validation.registerValidation(), validate, async (req, res) => {
     const { userName, email, password } = req.body;
+  
     try {
-        //create instance for user
-        const newUser = new User({
-            userName,
-            email,
-            password
+      // check if user already exists
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({
+          status: "failed",
+          data: [],
+          message: "Account already exists, try logging in"
         });
-        //check if user already exists
-        const existingUser = await User.findOne({ email })
-        if(existingUser)
-            return res.status(400).json({
-            status: "failed",
-            data: [],
-            message: "Account already exists, try logging in"
-        });
-
-    const savedUser = await newUser.save()
-    const { role, ...user_data } = savedUser._doc;
-    res.status(200).json({
-        status: "success",
+      }
+  
+      // create new user
+      const newUser = new User({ 
+        userName,
+        email,
+        password,
+      });
+      const savedUser = await newUser.save();
+      const { role, ...user_data } = savedUser._doc;
+  
+      // send confirmation email
+      const mailOptions = {
+        from: process.env.user_email,
+        to: email,
+        subject: 'Registration successful',
+        text: `Hello ${userName},\n\nThank you for registering with us. Your account has been successfully created.`
+      };
+  
+      await transporter.sendMail(mailOptions);
+  
+      // respond to client
+      res.status(200).json({
+        sucess: true,
+        stattus: "success",
         data: [user_data],
         message: "Thank you for registering with us, your account has been successfully created"
-    });
-
+      });
+  
     } catch (err) {
-        res.status(500).json({
-            status: "error",
-            code: 500,
-            data: [],
-            message: "Internal Server Error",
-        });
+      console.error(err);
+      res.status(500).json({
+        status: "error",
+        code: 500,
+        data: [],
+        message: "Internal Server Error",
+      });
     }
-    res.end();
-})
+  });
 
 
 //login users
@@ -223,13 +244,13 @@ router.post('/forgot-password', validation.forgotPasswordValidation(), validate,
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: process.env.email,
+                user: process.env.user_email,
                 password: process.env.password
             }
         });
 
         const mailOptions = {
-            from: process.env.email,
+            from: process.env.user_email,
             to: email,
             subject: "Password reser request",
             text: `You requested a password reset. Click the link below to reset your password:\n\n${resetUrl}\n`
@@ -302,6 +323,7 @@ router.get('/onboarding', verify, (req, res) => {
     });
 });
 
+//ADMIN
 //admin permisssion route
 router.get('/admin', verify, verifyRole, (req, res) => {
     res.status(200).json({
@@ -310,6 +332,7 @@ router.get('/admin', verify, verifyRole, (req, res) => {
     });
 });
 
+//RETRIEVE ALL USERS
 //get all users
 router.get('/users', verify, verifyRole, (req, res) => {
     res.status(200).json({
@@ -318,6 +341,7 @@ router.get('/users', verify, verifyRole, (req, res) => {
     res.end();
 });
 
+//EMAIL ROUTE
 //email server
 router.post('/emailList', async (req, res) => {
     try {
@@ -355,5 +379,15 @@ router.post('/emailList', async (req, res) => {
         return console.log(err, 'error occured')
     };
 });
+
+//SURVEY ROUTE
+//submit survey
+// router.post('/submit-survey', async (req, res) => {
+//     const { q1, q2, q3, q4, q5 } = req.body;
+
+//     try {
+//         const 
+//     }
+// })
 
 export default router;

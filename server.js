@@ -51,21 +51,6 @@ app.use(cors());
 //INITIALISE ROUTE NAVIGATION
 app.use("/", router);
 
-app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "frontend", "new-site", "build", "index.html"));
-});
-
-app.get('/about', (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../frontend/new-site"))
- });
-
-// app.get('/auth', (req, res) => {
-//     res.sendFile(path.resolve(__dirname, "../frontend/new-site"))
-// });
-
-router.get('/onboarding', verify, (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../frontend/new-site", "onboard.html"))
-});
 
 
 

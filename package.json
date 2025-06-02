@@ -8,7 +8,6 @@
     "test": "jest --runInBand",
     "start": "node server.js",
     "heroku-postbuild": "cd frontend/new-site && npm install && npm run build",
-    "build": "npm run heroku-postbuild",
     "dev": "concurrently -n 'server,frontend' \"nodemon server.js\" \"npm run frontend\""
   },
   "keywords": [],

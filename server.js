@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 import express from 'express';
 import { db } from './backend/database/db.js';
 import router from './backend/routes/routes.js';
-import { verify } from './backend/middleware/verify.js'
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -31,7 +30,7 @@ db();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
 
-//engine
+//serve static react files
 app.use(express.static(path.resolve(__dirname, "frontend", "new-site", "build")));
 
 //enable body parser
@@ -50,6 +49,10 @@ app.use(cors());
 
 //INITIALISE ROUTE NAVIGATION
 app.use("/", router);
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'build', 'index.html'))
+});
 
 
 

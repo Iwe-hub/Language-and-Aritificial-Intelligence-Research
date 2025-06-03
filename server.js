@@ -14,11 +14,6 @@ dotenv.config();
 //initialise express
 const app = express();
 
-//initialise server
-app.listen(PORT, () => {
-    console.log(`server running on http://localhost:${PORT}`)
-})
-
 //connect to database
 db();
 
@@ -30,29 +25,25 @@ db();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
 
-//serve static react files
-app.use(express.static(path.resolve(__dirname, "frontend", "new-site", "build")));
-
-//enable body parser
+// Enable CORS and body parsing
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
-
-//handle post requests efficiently
-app.use(express.urlencoded({ extended: true }));
-
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-//enable cors
-app.use(cors());
-
-
-
 //INITIALISE ROUTE NAVIGATION
-app.use("/", router);
+app.use("/api", router);
 
 app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, 'frontend', 'new-site', 'build', 'index.html'))
 });
+
+//initialise server
+app.listen(PORT, () => {
+    console.log(`server running on http://localhost:${PORT}`)
+})
+
 
 
 

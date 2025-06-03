@@ -31,7 +31,7 @@ app.use(express.json());
 app.use(express.static(path.resolve(__dirname, 'frontend', 'new-site', 'build')));
 
 // API routes
-app.use("/api", router);
+app.use("/", router);
 
 // Handle React routing, return all requests to React app
 app.get("*", (req, res) => {

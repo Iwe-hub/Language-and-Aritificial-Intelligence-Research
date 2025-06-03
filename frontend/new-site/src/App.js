@@ -5,14 +5,23 @@ import "./App.css";
 import AppRoutes from "./routes";
 
 function App() {
-
   useEffect(() => {
-    fetch("http://localhost:9000/v1")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Backend response:", data);
+    // Use relative path for production, full URL for development
+    const apiUrl = process.env.NODE_ENV === 'development' 
+      ? 'http://localhost:9000/v1' 
+      : '/v1';
+
+    fetch(apiUrl)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
       })
-      .catch((err) => console.error("Fetch error:", err));
+      .then((data) => {
+        console.log("Backend connection successful:", data);
+      })
+      .catch((err) => {
+        console.error("Backend connection failed:", err.message);
+      });
   }, []);
 
   return (

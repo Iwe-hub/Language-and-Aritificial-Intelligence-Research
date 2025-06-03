@@ -6,7 +6,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import bodyParser from 'body-parser';
-const PORT = 9000;
+const PORT = process.env.PORT || 9000;
 dotenv.config();
 
 

@@ -1,0 +1,170 @@
+/* Navigation Styles */
+.mobile-nav, 
+.desktop-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.mobile-nav-container, 
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+}
+
+.logo {
+  /* font-size: 1.5rem;
+  font-weight: bold;
+  color: #945b19; */
+  width: 10%;
+  height: auto;
+}
+.logo img {
+  width: 100%;
+  height: 100%;
+}
+
+.hamburger-menu {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #945b19;
+}
+
+.mobile-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.mobile-menu-item, 
+.nav-item {
+  padding: 1rem;
+  text-decoration: none;
+  color: #333;
+  transition: background-color 0.3s ease;
+}
+
+.mobile-menu-item:hover, 
+.nav-item:hover {
+  background-color: #f4f4f4;
+}
+
+.nav-items {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* Responsive Visibility */
+.mobile-nav {
+  display: none;
+}
+
+.nav-container {
+  justify-content: space-between;
+  display: flex;
+  width: 100%;
+}
+
+.desktop-nav {
+  display: flex;
+}
+
+/* Join Us Button Styles */
+.join1-us-button {
+  background-color: #945b19;
+  color: white !important;
+  padding: 8px 16px;
+  border-radius: 8px;
+  margin-left: auto; /* This pushes it to the right */
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.join1-us-button:hover {
+  background-color: #7c4b14 !important;
+  color: white !important;
+}
+
+/* Fix for the ::after issue */
+.join1-us-button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%; /* Not 0% */
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent for a better effect */
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.35s ease;
+}
+
+.join1-us-button:hover::after {
+  transform: scaleX(1);
+  transform-origin: center;
+}
+
+/* Mobile Specific Join Button Styles */
+.mobile-join1-button {
+  background-color: #945b19;
+  color: white;
+  text-align: center;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 8px;
+}
+
+/* Media Queries for Responsive Design */
+@media screen and (max-width: 768px) {
+  .mobile-nav {
+    display: block;
+  }
+  
+  .desktop-nav {
+    display: none;
+  }
+
+  /* Navigation Container Adjustments */
+  .nav-items {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .join1-us-button {
+    margin-left: 0;
+    width: auto; /* Reset width to auto */
+    display: inline-block;
+  }
+
+  /* Adjust main content to account for fixed navigation */
+  /* .home-container {
+    padding-top: 30px;
+  } */
+}
+
+/* Larger screens */
+@media screen and (min-width: 769px) {
+  .desktop-nav {
+    display: flex;
+  }
+  
+  .mobile-nav {
+    display: none;
+  }
+}

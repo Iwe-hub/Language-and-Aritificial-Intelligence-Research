@@ -17,7 +17,10 @@ const router = express.Router();
 
 //initialise communication between node and react server
 router.get("/v1", (req, res) => {
-    res.json({ message: "frontend and backend connected" })
+    res.json({
+        status: "success",
+        message: "frontend and backend connected successfully"
+    });
 });
 
 //SEO AUTHENTICATION

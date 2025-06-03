@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest --runInBand",
     "start": "node server.js",
-    "heroku-postbuild": "cd frontend/new-site && npm install && npm run build"
+    "heroku-postbuild": "echo Skipping frontend build because build folder is committed"
   },
   "keywords": [],
   "author": "",

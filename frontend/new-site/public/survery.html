@@ -378,6 +378,36 @@
         });
         document.getElementById("dot-" + num).classList.add("active");
       }
+
+
+
+      //collect submission data from form
+      const submit = document.querySelector(".submit-button");
+      submit.addEventListener("click", () => {
+        e.preventDefault();
+        let responses = {};
+
+        //loop through all questions and retrieve data
+        let allAnswered = true;
+        for(let i = 1; i <=5; i++) {
+          const selectedOptions = document.querySelector(`input[name="q${i}"]: checked`);
+          if(!selectedOptions) {
+            alert(`please answer question ${i} before submitting`)
+            allAnswered = false;
+            break;
+          }
+          responses[`q${i}`] = selectedOptions.value;
+        }
+        if (allAnswered) {
+          fetch('/submission', {
+            method: "POST",
+            headers: { "Content-Type" : "application/json" },
+            body: JSON.stringify(responses)
+          });
+        }
+
+
+      })
     </script>
   </body>
 </html>

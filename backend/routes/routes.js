@@ -9,6 +9,8 @@ import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import user from "../models/user.js";
+import xlsx from "xlsx";
+import fs from "fs";
 dotenv.config();
 
 //initialise export router
@@ -385,12 +387,64 @@ router.post('/emailList', async (req, res) => {
 
 //SURVEY ROUTE
 //submit survey
-// router.post('/submit-survey', async (req, res) => {
-//     const { q1, q2, q3, q4, q5 } = req.body;
 
-//     try {
-//         const 
-//     }
-// })
+//extract geolocation and ip address from response
+const getGeoLocation = (ip, callback) => {
+    https.get(`https://ipapi.co/${ip}/json/`, (resp) => {
+        let data = '';
+
+        resp.on('data', chunk => data += chunk)
+        resp.on('end', () => {
+            try {
+                const geo = JSON.parse(data)
+                callback(null, {
+                    ip: ip,
+                    country: geo.country_name || '',
+                    region: geo.region || '',
+                    city: geo.city || ''
+                });
+            } catch (err) {
+                callback(err, null)
+            }
+        });
+    }).on("error", err => callback(err, null));
+}
+
+router.post('/submission', (req, res) => {
+    const responses = req.body;
+    const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
+    const filePath = 'responses.xlsx'
+
+    getGeoLocation(ip, (err, location) => {
+        if(err) {
+            console.error("location lookup failed:", err);
+            location = {
+                ip,
+                country: '',
+                region: '',
+                city: ''
+            };
+        }
+        responses.timestamp = new Date().toISOString();
+        responses.ip = location.ip;
+        responses.country = location.country;
+        responses.region = location.region;
+        responses.city = location.city;
+
+        let data = [];
+        if(fs.existsSync(filePath)) {
+            const workbook = xlsx.readFile(filePath);
+            const sheet = workbook.Sheets['Responses'];
+            data = xlsx.utils.sheet_to_json(sheet);
+        }
+        data.push(responses);
+
+        const worksheet = xlsx.utils.json_to_sheet(data);
+        const workbook = xlsx.utils.book_new();
+        xlsx.utils.book_append_sheet(workbook, worksheet, 'Responses');
+        xlsx.writeFile(workbook, filePath);
+        res.status(200).json({ message: 'saved to excel', location })
+    })
+})
 
 export default router;

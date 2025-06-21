@@ -6,6 +6,7 @@ import AppRoutes from "./routes";
 
 function App() {
   useEffect(() => {
+  <link rel="icon" type="image/x-icon" href="favicon.ico"></link>
     // Use relative path for production, full URL for development
     const apiUrl = process.env.NODE_ENV === 'development' 
       ? 'http://localhost:9000/v1' 

@@ -120,7 +120,8 @@ function Home() {
               audio readings, and interactive tools designed for an engaging
               learning experience.
             </p>
-            <a
+           <div  className="section-one-button">
+             <a
               href="./auth.html"
               target="_blank"
               rel="noopener noreferrer"
@@ -129,6 +130,17 @@ function Home() {
                 Join Us Today
               </button>
             </a>
+
+            <a
+              href="./survery.html"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <button className={isVisible.sectionOne ? "survey-button" : ""}>
+                Demo
+              </button>
+            </a>
+           </div>
           </div>
           
           <div className="image-composition">

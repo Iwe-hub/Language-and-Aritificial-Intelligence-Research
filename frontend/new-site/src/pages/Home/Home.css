@@ -124,6 +124,18 @@ body {
   letter-spacing: 0;
 }
 
+
+
+
+
+.section-one-button{
+  display: block;
+  /* display: flex; */
+  width: 100%;
+  height: 100%;
+  gap: 30px;
+}
+
 .join-button {
   width: 30%;
   animation: slideInBottom 0.8s ease forwards;
@@ -142,6 +154,7 @@ body {
   position: relative;
   z-index: 1;
   transition: 0.3s; /* Faster transition */
+  margin-right: 50px;
 }
 
 .join-button::after {
@@ -162,6 +175,58 @@ body {
 .join-button:hover::after {
   transform: scale(1);
 }
+
+
+
+
+
+
+
+
+.survey-button {
+  width: 30%;
+  animation: slideInBottom 0.8s ease forwards;
+  padding: 10px 15px;
+  font-style: normal;
+  font-size: 18px;
+  font-weight: 400;
+  background-color: #945b19;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  line-height: 28px;
+  text-decoration: none;
+  cursor: pointer;
+  letter-spacing: 0;
+  position: relative;
+  z-index: 1;
+  transition: 0.3s; /* Faster transition */
+}
+
+.survey-button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: -1;
+  transform: scale(0);
+  border-radius: 10px;
+  transform-origin: center;
+  transition: 0.3s; /* Faster transition */
+}
+
+.survey-button:hover::after {
+  transform: scale(1);
+}
+
+
+
+
+
+
 
 /* Image grid optimized for better rendering */
 .image-composition {
@@ -921,6 +986,13 @@ gap: 1rem;
   .section-one-about h1 {
     font-size: 36px;
     line-height: 1.3;
+    justify-content: center;
+     text-align:left;
+  }
+  .section-one-about p {
+    font-size: 16px;
+    line-height: 24px;
+    text-align:left;
   }
   .section-one-about {
     text-align: center; /* Center-align text for better readability */
@@ -931,8 +1003,11 @@ gap: 1rem;
   }
   .join-button {
     width: 100%;
+    margin-bottom: 20px;
   }
-  
+  .survey-button {
+    width: 100%;
+  }
   .section-two {
     flex-direction: column;
     padding: 1.5rem;

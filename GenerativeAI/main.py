@@ -1,27 +1,32 @@
 from dbconnection import DBconnection
 from book import get_books_in_directory
 from book import read_book
+from book import display_books
 from query import execute_query
+from model import handle_translation_flow
 from typing import Dict, Any
+from sentence_transformers import SentenceTransformer
+from scipy.spatial.distance import cosine
 import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+evaluate_model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+
+#calculate cosine similarity between LLM output and reference
+def response_evaluation(llm_output, reference):
+    #encode texts into embeddings
+    embedding_output = evaluate_model.encode(llm_output)
+    embedding_ref = evaluate_model.encode(reference)
+
+    #calculate similarity (1 = identical, 0 = unrelated)
+    similarity = 1 - cosine(embedding_output, embedding_ref)
+    return similarity
 
 
-def display_books(books):
-    if not books:
-        logger.info("no books available")
-        return
-    
-    logger.info("available books:")
-    for i, book in enumerate(books, 1):
-        print(f"{i}. {book.name}")
-
-
-
-def main():
+#executes the program
+async def main():
     """
     execute program
     """
@@ -50,22 +55,29 @@ def main():
         return
 
     while True:
-        user_query = input("\nEnter your question about the book (or 'quit'): ").strip()
+        user_query = input("\nEnter question or 'translate-yoruba'/'quit: ").strip()
         if user_query.lower() in ('quit', 'exit'):
             break
-
+        elif user_query == 'translate':
+            await handle_translation_flow(book_content)
+            continue
         try:
             #execute query
             result = execute_query(user_query)
+            llm_response = result["response"]
 
             #display answer
             logger.info(f"\nANSWER:\n{'-'*40}")
-            logger.info(result["response"])
-
-            #display sources
+            logger.info(llm_response)
             logger.info('-'*40)
+
+            #evaluate llm outputs
+            similarity_score = response_evaluation(llm_response)
+            logger.info(f"similarity score (vs reference): {similarity_score:.2f}")
+
         except Exception as e:
             logger.error(f"error processing query: {str(e)}")
 
 if __name__ == "__main__":
-    main()
+    import asyncio
+    asyncio.run(main())

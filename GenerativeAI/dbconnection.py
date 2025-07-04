@@ -31,6 +31,7 @@ class DBconnection:
             
             self.db = self.client["droid"]
             self.collection = self.db["literature"]
+            self.collection = self.db["evaluation_metrics"]
             self.embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
             
         except Exception as e:
@@ -76,6 +77,9 @@ def vector_search(self, query: str, k: int = 4, filter: Optional[Dict[str, Any]]
         }
         for doc, score in results
     ]
+
+
+
 
 
 

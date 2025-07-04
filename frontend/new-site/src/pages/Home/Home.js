@@ -122,8 +122,7 @@ function Home() {
             </p>
            <div  className="section-one-button">
              <a
-              href="./auth.html"
-              target="_blank"
+              href="/auth"
               rel="noopener noreferrer"
             >
               <button className={isVisible.sectionOne ? "join-button" : ""}>
@@ -132,8 +131,7 @@ function Home() {
             </a>
 
             <a
-              href="./survery.html"
-              target="_blank"
+              href="/survey"
               rel="noopener noreferrer"
             >
               <button className={isVisible.sectionOne ? "survey-button" : ""}>

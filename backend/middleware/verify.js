@@ -8,23 +8,35 @@ dotenv.config();
 const verify = async (req, res, next) => {
     try {
         //get cookie session from request header
-        const authHeader = req.headers["cookie"];
+        const authHeader = req.headers.cookie || req.headers["cookie"];
         if (!authHeader)
             return res.sendStatus(401);
 
         //extract jwt from cookie string
-        const cookie = authHeader.split("=")[1];
-        const accessToken = cookie.split(";")[0];
-        const checkIfBlacklisted = await blacklist.findOne({ token: accessToken });
-        //if true, return unauthorised message asking for re-authentication
-        if(checkIfBlacklisted)
-            return res.status(401).json({
-            message: "This session has expired, please login"
-        });
+        const cookies = authHeader.split(";").reduce((acc, cookie) => {
+            const [name, value] = cookie.trim().split('=');
+            acc[name] = value;
+            return acc;
+        }, {})
+        const accessToken = cookies.token || cookies.access_token
+        if (!accessToken)
+            return res.sendStatus(401);
 
         //if blacklisted check if status of token has changed
+        let checkIfBlacklisted;
+        try {
+            checkIfBlacklisted = await blacklist.findOne({ token: accessToken })
+        } catch (dbError) {
+            console.error('Blacklist lookup failed:', dbError)
+            return res.status(500).json({ message: "authentication service unavailable" });
+        }
+
+        if (checkIfBlacklisted) {
+            return res.status(401).json({ message: "This section has expired, please login" });
+        }
+
         //verify token for integrity & expiration
-        jwt.verify(accessToken, process.env.SECRECT_ACCESS_TOKEN, async (err, decoded) => {
+        jwt.verify(accessToken, process.env.SECRET_ACCESS_TOKEN, async (err, decoded) => {
             if(err) {
                 return res.status(401).json({
                     message: "This session has expired. Please login"
@@ -38,7 +50,7 @@ const verify = async (req, res, next) => {
                 message: "User not found"
             });
             //exclude password & attach user data to request object
-            const { passoword, ...data } = user._doc;
+            const { password, ...data } = user._doc;
             req.user = data;
             next();
         });

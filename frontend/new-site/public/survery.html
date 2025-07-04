@@ -222,7 +222,7 @@
 
     <div id="question-1" class="question-container">
       <div class="question">
-       is youruba in your vocabulary?
+       is yoruba in your vocabulary?
       </div>
 
       <div class="options">
@@ -406,12 +406,22 @@
           responses[`q${i}`] = selectedOptions.value;
         }
         if (allAnswered) {
-          fetch('/submission', {
-            method: "POST",
-            headers: { "Content-Type" : "application/json" },
-            body: JSON.stringify(responses)
-          });
-        }
+          fetch('/submission', responses)
+              .then(res => res.json())
+              .then(data => {
+                if (data.success) {
+                  localStorage.setItem('token', data.token)
+                  alert("collection successful")
+                  window.location.href = '/onboarding';
+                } else {
+                  showError("formError", data.message || "Error during data collection")
+                }
+              })
+              .catch(err => {
+                console.error("Error:", err);
+                alert("An error occurred please try again")
+              });
+        };
 
 
       })

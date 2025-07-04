@@ -1,5 +1,9 @@
 import os
 from pathlib import Path
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 #retrieve books in the directory
@@ -27,3 +31,12 @@ def read_book(file_path: str):
     with open(file_path, 'r', encoding='utf-8') as f:
          content = f.read()
     return content
+
+def display_books(books):
+    if not books:
+        logger.info("no books available")
+        return
+    
+    logger.info("available books:")
+    for i, book in enumerate(books, 1):
+        print(f"{i}. {book.name}")

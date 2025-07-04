@@ -35,6 +35,16 @@ app.use("/", router);
 app.get("/v1", (req, res) => res.json({ message: "connection test route" }));
 
 // Handle React routing, return all requests to React app
+// Serve auth.html
+app.get('/auth', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'frontend', 'new-site', 'build', 'auth.html'));
+  });
+  
+  // Serve survey.html
+  app.get('/survey', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'frontend', 'new-site', 'build', 'survey.html'));
+  });
+  
 app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, 'frontend', 'new-site', 'build', 'index.html'));
 });
